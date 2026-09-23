@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ShieldCheck, UserPlus, LogIn } from 'lucide-react'
+import { ShieldCheck } from 'lucide-react'
 import Logo from '../components/Logo.jsx'
 import Input from '../components/Input.jsx'
 import Select from '../components/Select.jsx'
@@ -109,30 +109,6 @@ export default function Login() {
         <div className="w-full max-w-sm">
           <div className="lg:hidden mb-8">
             <Logo size={30} />
-          </div>
-
-          {/* Toggle switcher */}
-          <div className="flex bg-surface border border-border rounded-sm p-1 mb-8">
-            <button
-              type="button"
-              onClick={() => switchMode(false)}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[13px] font-medium rounded-xs transition-colors ${
-                !isSignUp ? 'bg-forest text-surface shadow-xs' : 'text-muted hover:text-charcoal'
-              }`}
-            >
-              <LogIn size={14} />
-              Sign In
-            </button>
-            <button
-              type="button"
-              onClick={() => switchMode(true)}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[13px] font-medium rounded-xs transition-colors ${
-                isSignUp ? 'bg-forest text-surface shadow-xs' : 'text-muted hover:text-charcoal'
-              }`}
-            >
-              <UserPlus size={14} />
-              Create Account
-            </button>
           </div>
 
           <h1 className="font-serif text-3xl text-charcoal mb-1.5">
