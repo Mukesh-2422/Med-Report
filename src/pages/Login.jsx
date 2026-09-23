@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ShieldCheck } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { ShieldCheck, ArrowLeft } from 'lucide-react'
 import Logo from '../components/Logo.jsx'
 import Input from '../components/Input.jsx'
 import Select from '../components/Select.jsx'
@@ -10,7 +10,14 @@ import { useAuth } from '../context/AuthContext.jsx'
 export default function Login() {
   const { login, register } = useAuth()
   const navigate = useNavigate()
-  const [isSignUp, setIsSignUp] = useState(false)
+  const [searchParams] = useSearchParams()
+  const [isSignUp, setIsSignUp] = useState(searchParams.get('mode') === 'signup')
+
+  useEffect(() => {
+    if (searchParams.get('mode') === 'signup') {
+      setIsSignUp(true)
+    }
+  }, [searchParams])
 
   // Form states
   const [name, setName] = useState('')
@@ -102,13 +109,28 @@ export default function Login() {
             AI-generated findings — every draft report awaits your review before it becomes final.
           </p>
         </div>
-        <div className="relative text-sage/70 text-[12.5px]">© 2026 MEDORA. For clinical research demonstration.</div>
+        <div className="relative flex items-center justify-between text-sage/70 text-[12.5px]">
+          <span>© 2026 MEDORA. Clinical Intelligence Platform.</span>
+          <Link to="/" className="text-champagne hover:underline flex items-center gap-1">
+            <ArrowLeft size={13} />
+            <span>Introduction Page</span>
+          </Link>
+        </div>
       </div>
 
       <div className="flex-1 flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-sm">
-          <div className="lg:hidden mb-8">
-            <Logo size={30} />
+          <div className="mb-6 flex items-center justify-between">
+            <div className="lg:hidden">
+              <Logo size={30} />
+            </div>
+            <Link
+              to="/"
+              className="inline-flex items-center gap-1.5 text-[13px] text-muted hover:text-forest transition-colors ml-auto"
+            >
+              <ArrowLeft size={14} />
+              <span>Back to Home</span>
+            </Link>
           </div>
 
           <h1 className="font-serif text-3xl text-charcoal mb-1.5">

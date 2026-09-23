@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { useAuth } from './context/AuthContext.jsx'
 
+import Introduction from './pages/Introduction.jsx'
 import Login from './pages/Login.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import NewAnalysis from './pages/NewAnalysis.jsx'
@@ -19,19 +20,25 @@ function ProtectedRoute({ children }) {
 }
 
 export default function App() {
+  const { isAuthenticated } = useAuth()
+
   return (
     <Routes>
+      {/* Introduction Page */}
+      <Route path="/" element={<Introduction />} />
+      <Route path="/intro" element={<Introduction />} />
+
+      {/* Authentication */}
       <Route path="/login" element={<Login />} />
 
+      {/* Protected Workspace */}
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/analysis/new" element={<ProtectedRoute><NewAnalysis /></ProtectedRoute>} />
       <Route path="/analysis/processing" element={<ProtectedRoute><AnalysisProcessing /></ProtectedRoute>} />
       <Route path="/analysis/result" element={<ProtectedRoute><AnalysisResult /></ProtectedRoute>} />
       <Route path="/analysis/verification" element={<ProtectedRoute><Verification /></ProtectedRoute>} />
 
-      {/* Report Review and Report Details share one view-model: viewing an
-          existing report from history is the same workspace as reviewing a
-          freshly generated draft. */}
+      {/* Report Review and Report Details */}
       <Route path="/reports" element={<ProtectedRoute><ReportsHistory /></ProtectedRoute>} />
       <Route path="/reports/:id" element={<ProtectedRoute><ReportReview /></ProtectedRoute>} />
 
@@ -40,8 +47,7 @@ export default function App() {
 
       <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
 
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/"} replace />} />
     </Routes>
   )
 }
