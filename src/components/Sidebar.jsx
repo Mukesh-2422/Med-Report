@@ -1,7 +1,6 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutGrid, FilePlus2, History, Users, Settings, LogOut } from 'lucide-react'
+import { LayoutGrid, FilePlus2, History, Users } from 'lucide-react'
 import Logo from './Logo.jsx'
-import { useAuth } from '../context/AuthContext.jsx'
 
 const navItems = [
   { to: '/dashboard', label: 'Overview', icon: LayoutGrid },
@@ -11,8 +10,6 @@ const navItems = [
 ]
 
 export default function Sidebar({ mobileOpen, onCloseMobile }) {
-  const { logout } = useAuth()
-
   const linkCls = ({ isActive }) =>
     `flex items-center gap-3 rounded-sm px-3.5 py-2.5 text-[14px] transition-colors ${
       isActive
@@ -41,19 +38,6 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
             </NavLink>
           ))}
         </nav>
-        <div className="px-4 py-5 border-t border-border dark:border-darkborder flex flex-col gap-1">
-          <NavLink to="/settings" className={linkCls} onClick={onCloseMobile}>
-            <Settings size={17} strokeWidth={1.8} />
-            Settings
-          </NavLink>
-          <button
-            onClick={logout}
-            className="flex items-center gap-3 rounded-sm px-3.5 py-2.5 text-[14px] text-charcoal/80 dark:text-darktext/80 hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors text-left"
-          >
-            <LogOut size={17} strokeWidth={1.8} />
-            Logout
-          </button>
-        </div>
       </aside>
     </>
   )
