@@ -25,6 +25,26 @@ h1, h2, h3, .font-serif {
   letter-spacing: -0.01em;
 }
 
+html.dark h1,
+html.dark h2,
+html.dark h3,
+html.dark h4,
+html.dark .font-serif {
+  color: #F7FAF8;
+}
+
+html.dark .text-charcoal {
+  color: #E6ECE9;
+}
+
+html.dark .text-muted {
+  color: #A6B8AE;
+}
+
+html.dark .border-border {
+  border-color: #2A3632;
+}
+
 ::selection { background-color: #A8B8A5; color: #173C35; }
 html.dark ::selection { background-color: #2F6B55; color: #FCFBF8; }
 
