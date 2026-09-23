@@ -11,6 +11,12 @@ body {
   color: #202522;
   font-family: 'Manrope', sans-serif;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+html.dark body {
+  background-color: #0D1210;
+  color: #E6ECE9;
 }
 
 h1, h2, h3, .font-serif {
@@ -20,10 +26,14 @@ h1, h2, h3, .font-serif {
 }
 
 ::selection { background-color: #A8B8A5; color: #173C35; }
+html.dark ::selection { background-color: #2F6B55; color: #FCFBF8; }
 
 :focus-visible {
   outline: 2px solid #173C35;
   outline-offset: 2px;
+}
+html.dark :focus-visible {
+  outline: 2px solid #A8B8A5;
 }
 
 @keyframes fadeIn {
@@ -36,6 +46,9 @@ h1, h2, h3, .font-serif {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #DCDDD6; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #A8B8A5; }
+
+html.dark ::-webkit-scrollbar-thumb { background: #2A3632; }
+html.dark ::-webkit-scrollbar-thumb:hover { background: #3B4B46; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

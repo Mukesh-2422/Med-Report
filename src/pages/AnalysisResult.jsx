@@ -57,18 +57,18 @@ export default function AnalysisResult() {
         </div>
       </div>
 
-      <div className="border border-border rounded-sm bg-surface p-6">
+      <div className="border border-border dark:border-darkborder rounded-sm bg-surface dark:bg-darksurface p-6 transition-colors">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-full bg-forest/10 text-forest flex items-center justify-center shrink-0">
+            <div className="h-9 w-9 rounded-full bg-forest/10 dark:bg-forest/40 text-forest dark:text-sage flex items-center justify-center shrink-0">
               <ShieldCheck size={17} />
             </div>
             <div>
-              <p className="text-[13px] uppercase tracking-wide text-muted mb-2">Analysis Summary</p>
+              <p className="text-[13px] uppercase tracking-wide text-muted dark:text-darkmuted mb-2 font-semibold">Analysis Summary</p>
               <div className="flex gap-8">
                 <StatItem label="Detected entities" value={findings.length} />
                 <StatItem label="Verified" value={verified} />
-                <StatItem label="Needs review" value={needsReview} />
+                <StatItem label="Needs review" value={needsReview} accent={needsReview > 0} />
               </div>
             </div>
           </div>
