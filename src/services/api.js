@@ -4,7 +4,7 @@
 import axios from 'axios'
 import { mockPatients, getPatientById } from '../data/mockPatients.js'
 import { mockAnalyses, getAnalysisById } from '../data/mockAnalyses.js'
-import { getFindings } from '../data/mockFindings.js'
+import { getFindings, updateFindingDoctorDecision, getMockReviewSummary, getMockAuditTrail } from '../data/mockFindings.js'
 import { mockReports, getReportById } from '../data/mockReports.js'
 
 export const client = axios.create({
@@ -12,7 +12,7 @@ export const client = axios.create({
   timeout: 8000,
 })
 
-const delay = (ms = 400) => new Promise((resolve) => setTimeout(resolve, ms))
+const delay = (ms = 350) => new Promise((resolve) => setTimeout(resolve, ms))
 
 // ---- Auth ----
 export async function login(email, password) {
@@ -80,50 +80,72 @@ export async function getAnalysis(id) {
   }
 }
 
-// ---- RAG & Clinical Verification ----
-export async function retrieveMedicalEvidence({ entity, clinical_context, modality = 'Chest X-ray', top_k = 3 }) {
+// ---- Claim-Level Verification & Traceability ----
+export async function getClaims(analysisId = 'AN-2024-0917') {
   try {
-    const res = await client.post('/api/rag/retrieve', {
-      entity,
-      clinical_context,
-      modality,
-      top_k,
-    })
+    const res = await client.get(`/api/analysis/${analysisId}/claims`)
     return res.data
-  } catch {
-    await delay(300)
-    const allFindings = getFindings('AN-2024-0917')
-    const match = allFindings.find((f) => f.entity.toLowerCase().includes(entity.toLowerCase()))
-    return {
-      entity,
-      modality,
-      results: match ? [match.evidence] : [],
-    }
-  }
-}
-
-export async function verifyAnalysis(analysisId, data = {}) {
-  try {
-    const res = await client.post(`/api/analysis/${analysisId}/verify`, data)
-    return res.data.findings
-  } catch {
-    await delay(300)
-    return getFindings(analysisId)
-  }
-}
-
-export async function getAnalysisEvidence(analysisId) {
-  try {
-    const res = await client.get(`/api/analysis/${analysisId}/evidence`)
-    return res.data.findings || res.data
   } catch {
     await delay(250)
     return getFindings(analysisId)
   }
 }
 
+export async function getClaimEvidence(claimId, analysisId = 'AN-2024-0917') {
+  try {
+    const res = await client.get(`/api/claims/${claimId}/evidence?analysis_id=${analysisId}`)
+    return res.data
+  } catch {
+    await delay(200)
+    const claims = getFindings(analysisId)
+    return claims.find((c) => c.id === claimId) || claims[0]
+  }
+}
+
+export async function verifyClaim(data) {
+  try {
+    const res = await client.post(`/api/claims/${data.claimId || 'clm_1'}/verify`, null, { params: data })
+    return res.data
+  } catch {
+    await delay(250)
+    return data
+  }
+}
+
+// ---- Doctor Feedback Loop ----
+export async function submitDoctorDecision(claimId, decisionPayload, analysisId = 'AN-2024-0917') {
+  try {
+    const res = await client.post(`/api/claims/${claimId}/doctor-decision?analysis_id=${analysisId}`, decisionPayload)
+    return res.data
+  } catch {
+    await delay(250)
+    return updateFindingDoctorDecision(analysisId, claimId, decisionPayload)
+  }
+}
+
+export async function getReviewSummary(analysisId = 'AN-2024-0917') {
+  try {
+    const res = await client.get(`/api/analysis/${analysisId}/review-summary`)
+    return res.data
+  } catch {
+    await delay(150)
+    return getMockReviewSummary(analysisId)
+  }
+}
+
+export async function getAuditTrail(analysisId = 'AN-2024-0917') {
+  try {
+    const res = await client.get(`/api/analysis/${analysisId}/audit-trail`)
+    return res.data
+  } catch {
+    await delay(150)
+    return getMockAuditTrail(analysisId)
+  }
+}
+
+// Legacy Verification Support
 export async function getVerification(analysisId) {
-  return getAnalysisEvidence(analysisId)
+  return getClaims(analysisId)
 }
 
 // ---- Reports ----
