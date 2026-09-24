@@ -3,10 +3,9 @@ import { ArrowLeft } from 'lucide-react'
 
 /**
  * Global BackButton Component for MEDORA.
- * Navigates to the exact previous page the clinician came from (via navigate(-1)).
- * Uses a safe fallback (e.g. /dashboard) only if accessed via direct URL without history.
+ * Icon-only navigation button returning the clinician to the exact previous page.
  */
-export default function BackButton({ fallback = '/dashboard', label = 'Back', className = '' }) {
+export default function BackButton({ fallback = '/dashboard', className = '' }) {
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -24,12 +23,11 @@ export default function BackButton({ fallback = '/dashboard', label = 'Back', cl
     <button
       onClick={handleBack}
       type="button"
-      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xs text-[12.5px] font-medium text-charcoal/80 dark:text-darktext/80 hover:text-forest dark:hover:text-sage hover:bg-forest/10 dark:hover:bg-forest/20 border border-border dark:border-darkborder bg-surface dark:bg-darksurface transition-all shadow-2xs group cursor-pointer ${className}`}
-      aria-label="Go to previous page"
-      title="Return to previous page (Back)"
+      className={`inline-flex items-center justify-center h-8 w-8 rounded-sm text-charcoal/80 dark:text-darktext/80 hover:text-forest dark:hover:text-sage hover:bg-forest/10 dark:hover:bg-forest/20 border border-border dark:border-darkborder bg-surface dark:bg-darksurface transition-all shadow-2xs group cursor-pointer ${className}`}
+      aria-label="Back"
+      title="Back to previous page"
     >
-      <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-0.5 text-forest dark:text-sage" />
-      <span>{label}</span>
+      <ArrowLeft size={16} strokeWidth={2.2} className="transition-transform group-hover:-translate-x-0.5 text-forest dark:text-sage" />
     </button>
   )
 }
