@@ -1,20 +1,10 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import {
-  Bell,
-  ChevronDown,
-  Keyboard,
-  LogOut,
-  Menu,
-  Moon,
-  Settings,
-  ShieldCheck,
-  Sun,
-} from 'lucide-react'
+import { ArrowLeft, Bell, ChevronDown, Keyboard, LogOut, Menu, Moon, Settings, ShieldCheck, Sun } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useTheme } from '../context/ThemeContext.jsx'
 
-export default function Topbar({ title, description, onOpenMobile, onOpenShortcuts }) {
+export default function Topbar({ title, description, showBack, backFallback = '/dashboard', onOpenMobile, onOpenShortcuts }) {
   const { doctor, logout } = useAuth()
   const { isDark, toggleTheme } = useTheme()
   const navigate = useNavigate()

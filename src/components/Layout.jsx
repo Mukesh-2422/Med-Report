@@ -1,13 +1,34 @@
 import { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import Sidebar from './Sidebar.jsx'
 import Topbar from './Topbar.jsx'
+import BackButton from './BackButton.jsx'
 import ShortcutsModal from './ShortcutsModal.jsx'
 import { useTheme } from '../context/ThemeContext.jsx'
 
-export default function Layout({ title, description, children }) {
+export default function Layout({ title, description, showBack, backFallback, children }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [shortcutsOpen, setShortcutsOpen] = useState(false)
   const { toggleTheme } = useTheme()
+  const location = useLocation()
+
+  // Determine whether to display Back button
+  // Defaults to false for root workspace and landing pages, true for all secondary/detail pages
+  const isRootPage = ['/dashboard', '/', '/intro'].includes(location.pathname)
+  const shouldShowBack = showBack !== undefined ? showBack : !isRootPage
+
+  // Contextual fallback in case of direct URL access with empty session history
+  const defaultFallback =
+    backFallback ||
+    (location.pathname.startsWith('/patients/')
+      ? '/patients'
+      : location.pathname.startsWith('/reports/')
+      ? '/reports'
+      : location.pathname.startsWith('/analysis/verification')
+      ? '/analysis/result'
+      : location.pathname.startsWith('/analysis/result')
+      ? '/analysis/new'
+      : '/dashboard')
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -34,10 +55,19 @@ export default function Layout({ title, description, children }) {
         <Topbar
           title={title}
           description={description}
+          showBack={shouldShowBack}
+          backFallback={defaultFallback}
           onOpenMobile={() => setMobileOpen(true)}
           onOpenShortcuts={() => setShortcutsOpen(true)}
         />
-        <main className="flex-1 px-5 lg:px-10 py-8 animate-fade-in">{children}</main>
+        <main className="flex-1 px-5 lg:px-10 py-6 lg:py-8 animate-fade-in">
+          {shouldShowBack && (
+            <div className="mb-5">
+              <BackButton fallback={defaultFallback} />
+            </div>
+          )}
+          {children}
+        </main>
       </div>
 
       <ShortcutsModal open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
