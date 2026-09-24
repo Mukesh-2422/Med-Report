@@ -93,7 +93,14 @@ export default function NewAnalysis() {
       notify('Please resolve the highlighted fields before continuing.', 'warning')
       return
     }
-    navigate('/analysis/processing', { state: { patientId: form.patientId, age: form.age } })
+    navigate('/analysis/processing', {
+      state: {
+        patientId: form.patientId,
+        age: form.age,
+        gender: form.gender,
+        clinicalIndication: form.symptoms ? `${form.symptoms}. ${form.history}` : form.history || 'Clinical evaluation for cardiopulmonary symptoms.',
+      },
+    })
   }
 
   return (

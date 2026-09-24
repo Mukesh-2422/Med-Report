@@ -1,4 +1,5 @@
 import StatusBadge from './StatusBadge.jsx'
+import { ShieldCheck } from 'lucide-react'
 
 export default function ReportViewer({ report }) {
   return (
@@ -20,30 +21,33 @@ export default function ReportViewer({ report }) {
       </Section>
 
       <Section title="Findings">
-        <ul className="flex flex-col gap-2">
+        <ul className="flex flex-col gap-2.5">
           {report.findings.map((f, i) => (
-            <li key={i} className="text-[14.5px] text-charcoal/85 dark:text-darktext/85 leading-relaxed flex gap-2">
-              <span className="text-sage dark:text-sage/70 font-bold">—</span>
-              {f}
+            <li key={i} className="text-[14.5px] text-charcoal/85 dark:text-darktext/85 leading-relaxed flex items-start gap-2.5">
+              <span className="text-forest dark:text-sage font-bold mt-0.5">•</span>
+              <span>{f}</span>
             </li>
           ))}
         </ul>
       </Section>
 
       <Section title="Impression">
-        <p className="text-[14.5px] text-charcoal dark:text-darktext font-medium leading-relaxed bg-forest/5 dark:bg-forest/20 border-l-2 border-forest dark:border-sage p-3 rounded-r-sm">
+        <p className="text-[14.5px] text-charcoal dark:text-darktext font-medium leading-relaxed bg-forest/5 dark:bg-forest/20 border-l-2 border-forest dark:border-sage p-3.5 rounded-r-sm">
           {report.impression}
         </p>
       </Section>
 
-      <Section title="Evidence Status" last>
+      <Section title="AI Verification Summary (Entity-Grounded RAG)" last>
         <div className="flex flex-col gap-2">
           {report.evidenceStatus.map((e) => (
             <div
               key={e.label}
               className="flex items-center justify-between border border-border dark:border-darkborder rounded-sm px-3.5 py-2.5 bg-background/50 dark:bg-darkcard/50"
             >
-              <span className="text-[13.5px] text-charcoal dark:text-darktext">{e.label}</span>
+              <div className="flex items-center gap-2">
+                <ShieldCheck size={15} className="text-forest dark:text-sage" />
+                <span className="text-[13.5px] font-medium text-charcoal dark:text-darktext">{e.label}</span>
+              </div>
               <StatusBadge status={e.status} />
             </div>
           ))}

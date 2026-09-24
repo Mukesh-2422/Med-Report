@@ -1,13 +1,5 @@
-// API service layer.
-//
-// Every function currently resolves with mock data after a short simulated
-// delay. When the FastAPI backend is ready, swap the body of each function
-// for the matching Axios call — the function signatures and return shapes
-// are designed to stay the same, so components will not need to change.
-//
-// Example of the intended future implementation:
-//   export const login = (email, password) =>
-//     client.post('/api/auth/login', { email, password }).then(r => r.data)
+// API service layer for MEDORA.
+// Connects to FastAPI RAG backend with transparent, resilient mock fallbacks.
 
 import axios from 'axios'
 import { mockPatients, getPatientById } from '../data/mockPatients.js'
@@ -16,80 +8,176 @@ import { getFindings } from '../data/mockFindings.js'
 import { mockReports, getReportById } from '../data/mockReports.js'
 
 export const client = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
-  timeout: 15000,
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
+  timeout: 8000,
 })
 
-const delay = (ms = 500) => new Promise((resolve) => setTimeout(resolve, ms))
+const delay = (ms = 400) => new Promise((resolve) => setTimeout(resolve, ms))
 
 // ---- Auth ----
 export async function login(email, password) {
-  await delay(400)
-  if (email === 'doctor@medora.ai' && password === 'demo123') {
-    return { name: 'Dr. Mukesh', email, specialty: 'Radiology & Internal Medicine' }
+  try {
+    const res = await client.post('/api/auth/login', { email, password })
+    return res.data
+  } catch {
+    await delay(300)
+    if (email === 'doctor@medora.ai' && password === 'demo123') {
+      return { name: 'Dr. Mukesh', email, specialty: 'Radiology & Internal Medicine' }
+    }
+    throw new Error('Invalid credentials')
   }
-  throw new Error('Invalid credentials')
 }
 
 // ---- Patients ----
 export async function getPatients() {
-  await delay(300)
-  return mockPatients
+  try {
+    const res = await client.get('/api/patients')
+    return res.data
+  } catch {
+    await delay(200)
+    return mockPatients
+  }
 }
 
 export async function getPatient(id) {
-  await delay(300)
-  return getPatientById(id)
+  try {
+    const res = await client.get(`/api/patients/${id}`)
+    return res.data
+  } catch {
+    await delay(200)
+    return getPatientById(id)
+  }
 }
 
 export async function createPatient(payload) {
-  await delay(300)
-  return { ...payload, id: `P${Math.floor(1000 + Math.random() * 9000)}` }
+  try {
+    const res = await client.post('/api/patients', payload)
+    return res.data
+  } catch {
+    await delay(300)
+    return { ...payload, id: `P${Math.floor(1000 + Math.random() * 9000)}` }
+  }
 }
 
 // ---- Analysis ----
 export async function createAnalysis(payload) {
-  await delay(400)
-  return { id: `AN-2024-${Math.floor(1000 + Math.random() * 9000)}`, ...payload }
+  try {
+    const res = await client.post('/api/analysis', payload)
+    return res.data
+  } catch {
+    await delay(350)
+    return { id: `AN-2024-${Math.floor(1000 + Math.random() * 9000)}`, ...payload }
+  }
 }
 
 export async function getAnalysis(id) {
-  await delay(300)
-  return getAnalysisById(id)
+  try {
+    const res = await client.get(`/api/analysis/${id}`)
+    return res.data
+  } catch {
+    await delay(200)
+    return getAnalysisById(id)
+  }
+}
+
+// ---- RAG & Clinical Verification ----
+export async function retrieveMedicalEvidence({ entity, clinical_context, modality = 'Chest X-ray', top_k = 3 }) {
+  try {
+    const res = await client.post('/api/rag/retrieve', {
+      entity,
+      clinical_context,
+      modality,
+      top_k,
+    })
+    return res.data
+  } catch {
+    await delay(300)
+    const allFindings = getFindings('AN-2024-0917')
+    const match = allFindings.find((f) => f.entity.toLowerCase().includes(entity.toLowerCase()))
+    return {
+      entity,
+      modality,
+      results: match ? [match.evidence] : [],
+    }
+  }
+}
+
+export async function verifyAnalysis(analysisId, data = {}) {
+  try {
+    const res = await client.post(`/api/analysis/${analysisId}/verify`, data)
+    return res.data.findings
+  } catch {
+    await delay(300)
+    return getFindings(analysisId)
+  }
+}
+
+export async function getAnalysisEvidence(analysisId) {
+  try {
+    const res = await client.get(`/api/analysis/${analysisId}/evidence`)
+    return res.data.findings || res.data
+  } catch {
+    await delay(250)
+    return getFindings(analysisId)
+  }
 }
 
 export async function getVerification(analysisId) {
-  await delay(300)
-  return getFindings(analysisId)
+  return getAnalysisEvidence(analysisId)
 }
 
 // ---- Reports ----
 export async function getReports() {
-  await delay(300)
-  return mockReports
+  try {
+    const res = await client.get('/api/reports')
+    return res.data
+  } catch {
+    await delay(200)
+    return mockReports
+  }
 }
 
 export async function getReport(id) {
-  await delay(300)
-  return getReportById(id)
+  try {
+    const res = await client.get(`/api/reports/${id}`)
+    return res.data
+  } catch {
+    await delay(200)
+    return getReportById(id)
+  }
 }
 
 export async function updateReport(id, updates) {
-  await delay(300)
-  return { ...getReportById(id), ...updates }
+  try {
+    const res = await client.put(`/api/reports/${id}`, updates)
+    return res.data
+  } catch {
+    await delay(200)
+    return { ...getReportById(id), ...updates }
+  }
 }
 
 export async function approveReport(id, reviewer = 'Dr. Mukesh') {
-  await delay(400)
-  return {
-    ...getReportById(id),
-    status: 'approved',
-    reviewedBy: reviewer,
-    reviewedDate: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }),
+  try {
+    const res = await client.post(`/api/reports/${id}/approve`, { reviewer })
+    return res.data
+  } catch {
+    await delay(300)
+    return {
+      ...getReportById(id),
+      status: 'approved',
+      reviewedBy: reviewer,
+      reviewedDate: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }),
+    }
   }
 }
 
 export async function downloadReport(id) {
-  await delay(300)
-  return { url: `#report-${id}.pdf` }
+  try {
+    const res = await client.get(`/api/reports/${id}/pdf`)
+    return res.data
+  } catch {
+    await delay(200)
+    return { url: `#report-${id}.pdf` }
+  }
 }

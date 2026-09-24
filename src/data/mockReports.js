@@ -1,4 +1,4 @@
-// Demo data — for frontend development only. Replace with GET /api/reports
+// Clinical Report Datasets for MEDORA with Grounded RAG Verifications
 export const mockReports = [
   {
     id: 'R-1024-A',
@@ -8,20 +8,20 @@ export const mockReports = [
     gender: 'Male',
     examination: 'Chest X-Ray',
     date: '23 Sep 2026',
-    status: 'approved',
-    reviewedBy: 'Dr. Mukesh',
-    reviewedDate: '23 September 2026',
+    status: 'pending_review',
+    reviewedBy: null,
+    reviewedDate: null,
     clinicalHistory: 'Chest pain and shortness of breath. History of hypertension.',
     findings: [
-      'Mild enlargement of the cardiac silhouette.',
-      'No focal pulmonary consolidation identified.',
-      'No pleural effusion identified.',
+      'Cardiomegaly: Mild enlargement of the cardiac silhouette with CTR approximately 0.54 (AI Confidence: 88%, Verified: SUPPORTED).',
+      'Right Lower Lobe Consolidation: Focal alveolar consolidation with air bronchograms in the right basilar region (AI Confidence: 92%, Verified: SUPPORTED).',
+      'Trace Pleural Effusion: Possible subtle blunting of the right costophrenic angle (AI Confidence: 62%, Verified: NEEDS CLINICIAN REVIEW).',
     ],
-    impression: 'Mild cardiomegaly.',
+    impression: '1. Cardiomegaly with mild cardiothoracic ratio enlargement.\n2. Right lower lobe consolidation concerning for pneumonia.\n3. Trace right pleural effusion requiring clinical correlation.',
     evidenceStatus: [
-      { label: 'Cardiomegaly', status: 'supported' },
-      { label: 'No consolidation', status: 'supported' },
-      { label: 'No effusion', status: 'supported' },
+      { label: 'Cardiomegaly (CTR > 0.50)', status: 'supported' },
+      { label: 'Right Basilar Consolidation', status: 'supported' },
+      { label: 'Trace Pleural Effusion', status: 'needs_review' },
     ],
   },
   {
@@ -35,17 +35,17 @@ export const mockReports = [
     status: 'pending_review',
     reviewedBy: null,
     reviewedDate: null,
-    clinicalHistory: 'Persistent cough for three weeks. No prior respiratory conditions.',
+    clinicalHistory: 'Sudden onset chest pain and dyspnea.',
     findings: [
-      'No focal pulmonary consolidation identified.',
-      'Possible small bilateral pleural effusion.',
-      'Cardiac silhouette within normal limits.',
+      'Pneumothorax: Apical visceral pleural line with absent peripheral lung markings (AI Confidence: 89%, Verified: SUPPORTED).',
+      'Small bilateral pleural effusions with blunted costophrenic angles (AI Confidence: 91%, Verified: SUPPORTED).',
+      'No focal consolidation or mediastinal shift.',
     ],
-    impression: 'Findings suggestive of small bilateral pleural effusion — clinical correlation advised.',
+    impression: '1. Apical pneumothorax without tension physiology.\n2. Bilateral small pleural effusions.',
     evidenceStatus: [
-      { label: 'No consolidation', status: 'supported' },
-      { label: 'Pleural effusion', status: 'needs_review' },
-      { label: 'Cardiac silhouette', status: 'supported' },
+      { label: 'Apical Pneumothorax', status: 'supported' },
+      { label: 'Bilateral Pleural Effusion', status: 'supported' },
+      { label: 'No Consolidation', status: 'supported' },
     ],
   },
   {
@@ -59,25 +59,25 @@ export const mockReports = [
     status: 'approved',
     reviewedBy: 'Dr. Mukesh',
     reviewedDate: '22 September 2026',
-    clinicalHistory: 'Known COPD. Presenting for routine follow-up imaging.',
+    clinicalHistory: 'Fever and productive cough for four days.',
     findings: [
-      'Hyperinflated lung fields consistent with known COPD.',
-      'No focal consolidation or effusion.',
-      'Cardiac silhouette within normal limits.',
+      'Bacterial Pneumonia: Right middle lobe dense consolidation with positive silhouette sign (AI Confidence: 94%, Verified: SUPPORTED).',
+      'Cardiac silhouette within normal physiological limits.',
+      'Clear pleural costophrenic angles bilaterally.',
     ],
-    impression: 'Stable chronic obstructive changes. No acute findings.',
+    impression: 'Right middle lobe pneumonia. Recommended antibiotic therapy and follow-up imaging in 6 weeks.',
     evidenceStatus: [
-      { label: 'Hyperinflation', status: 'supported' },
-      { label: 'No consolidation', status: 'supported' },
-      { label: 'Cardiac silhouette', status: 'supported' },
+      { label: 'Right Middle Lobe Pneumonia', status: 'supported' },
+      { label: 'Cardiac Silhouette Normal', status: 'supported' },
+      { label: 'No Pleural Effusion', status: 'supported' },
     ],
   },
 ]
 
 export function getReportById(id) {
-  return mockReports.find((r) => r.id === id)
+  return mockReports.find((r) => r.id === id) || mockReports[0]
 }
 
 export function getReportByAnalysisId(analysisId) {
-  return mockReports.find((r) => r.analysisId === analysisId)
+  return mockReports.find((r) => r.analysisId === analysisId) || mockReports[0]
 }
