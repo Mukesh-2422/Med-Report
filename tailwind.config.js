@@ -4,6 +4,16 @@ export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
   theme: {
     extend: {
+      borderRadius: {
+        'xs': '6px',
+        'sm': '8px',
+        DEFAULT: '10px',
+        'md': '12px',
+        'lg': '16px',
+        'xl': '20px',
+        '2xl': '24px',
+        '3xl': '28px',
+      },
       colors: {
         background: '#F5F3EE',
         surface: '#FCFBF8',
@@ -28,7 +38,8 @@ export default {
         sans: ['Manrope', 'sans-serif'],
       },
       boxShadow: {
-        card: '0 1px 2px rgba(32, 37, 34, 0.04), 0 1px 1px rgba(32, 37, 34, 0.03)',
+        card: '0 1px 3px rgba(32, 37, 34, 0.05), 0 1px 2px rgba(32, 37, 34, 0.03)',
+        subtle: '0 4px 12px rgba(0, 0, 0, 0.04)',
       },
     },
   },
